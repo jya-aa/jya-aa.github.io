@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情人节卡片</title>
+    <style>
+        body {
+            background-color: #ebc8c0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            color: #ff5873;
+            background-image: url(mini-hearth.png);
+            background-size: 100%;
+            text-align: center; /* 使文本居中 */
+        }
+
+        .container {
+            padding: 50px;
+            max-width: 600px;
+            margin: auto;
+            position: relative;
+            z-index: 10; /* 确保内容在爱心雨之上 */
+        }
+
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            animation: fadeIn 1s;
+        }
+
+        .gif-container {
+            margin-bottom: 30px;
+            display: flex; /* 使用flex布局 */
+            justify-content: center; /* 水平居中 */
+        }
+
+        .button {
+            padding: 15px 30px;
+            font-size: 1.5em;
+            margin: 20px;
+            cursor: pointer;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.3s;
+            animation: fadeIn 1s;
+        }
+
+        .button:hover {
+            background-color: #ff1a1a;
+            transform: scale(1.1);
+        }
+
+        .message {
+            display: none;
+            font-size: 2em; /* 增加文本字号 */
+            margin: 20px 0; /* 增加上下间距 */
+            color: yellow;
+            font-weight: bold; /* 加粗文本 */
+            animation: fadeIn 1s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes shake {
+            0% { transform: translate(0); }
+            25% { transform: translate(-5px); }
+            50% { transform: translate(5px); }
+            75% { transform: translate(-5px); }
+            100% { transform: translate(0); }
+        }
+
+        /* 爱心雨的样式 */
+        .heart {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            font-size: 20px; /* 固定大小 */
+            color: #ff69b4; /* 深粉色 */
+            animation: fall 5s infinite;
+            opacity: 0.7;
+            transform: translateX(-50%); /* 使爱心居中 */
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translate(-50%, 0);
+            }
+            100% {
+                transform: translate(-50%, 100vh);
+            }
+        }
+    </style>
+</head>
+<body>
+<audio id="backgroundMusic" autoplay loop muted>
+    <source src="最后一页.mp3" type="audio/mpeg"> <!-- 替换为您的音乐文件路径 -->
+    您的浏览器不支持音频元素。
+</audio>
+
+<audio id="yesSound">
+    <source src="HAOBANGO好棒哦.mp3" type="audio/mpeg"> <!-- 替换为“愿意”按钮的音效文件路径 -->
+    您的浏览器不支持音频元素。
+</audio>
+
+<audio id="yesSoundEnglish">
+    <source src="HAOBANGO好棒哦.mp3" type="audio/mpeg"> <!-- 替换为“愿意”按钮的英文音效文件路径 -->
+    您的浏览器不支持音频元素。
+</audio>
+
+<!-- 不愿意按钮的音效 -->
+<audio id="noSound1">
+    <source src="诶诶不可以  别.mp3" type="audio/mpeg"> <!-- 不愿意音效1 -->
+    您的浏览器不支持音频元素。
+</audio>
+
+<audio id="noSound2">
+    <source src="诶诶不可以  别.mp3" type="audio/mpeg"> <!-- 不愿意音效2 -->
+    您的浏览器不支持音频元素。
+</audio>
+
+<audio id="noSound3">
+    <source src="不要啊惨叫.mp3" type="audio/mpeg"> <!-- 不愿意音效3 -->
+    您的浏览器不支持音频元素。
+</audio>
+
+<div class="container" id="mainContainer">
+    <h1>你愿意成为我的情人节搭子吗？</h1>
+    <div class="gif-container">
+        <img id="gifImage" src="cat-01.gif" alt="选择提示" width="400"> <!-- 替换为您的初始GIF图片路径 -->
+    </div>
+    <div class="message" id="responseMessage"></div> <!-- 移动文本到这里 -->
+    <button class="button" id="yesButton">愿意</button>
+    <button class="button" id="noButton">不愿意</button>
+</div>
+
+<script>
+    let noButtonClickCount = 0; // 记录点击“不愿意”按钮的次数
+
+    // GIF图片数组
+    const gifs = [
+        "cat-01.gif", // 初始GIF
+        "cat-yes.gif", // 愿意后的GIF
+        "cat-02.gif", // 第一次不愿意后的GIF
+        "cat-03.gif", // 第二次不愿意后的GIF
+        "cat-04.gif"  // 第三次不愿意后的GIF
+    ];
+
+    function playBackgroundMusic() {
+        const audio = document.getElementById('backgroundMusic');
+        audio.muted = false; // 取消静音
+        audio.play(); // 播放音乐
+    }
+
+    document.getElementById('yesButton').onclick = function() {
+        playBackgroundMusic(); // 播放音乐
+
+        const message = document.getElementById('responseMessage');
+        message.innerText = '单身快乐！doge';
+        message.style.display = 'block';
+        this.style.animation = 'none'; // 停止动画
+        this.style.transform = 'scale(1.2)';
+        setTimeout(() => {
+            this.style.transform = 'scale(1)';
+        }, 300);
+
+        // 更换GIF图片
+        document.getElementById('gifImage').src = gifs[1]; // 更换为愿意后的GIF
+
+        // 播放“愿意”按钮的音效
+        const yesSound = Math.random() > 0.5 ? document.getElementById('yesSound') : document.getElementById('yesSoundEnglish');
+        yesSound.currentTime = 0; // 从头开始播放
+        yesSound.play();
+
+        // 开始掉落爱心雨
+        createHeartRain();
+    };
+
+    document.getElementById('noButton').onclick = function() {
+        playBackgroundMusic(); // 播放音乐
+
+        noButtonClickCount++; // 增加点击次数
+        const message = document.getElementById('responseMessage');
+
+        if (noButtonClickCount === 1) {
+            message.innerText = '真的吗？';
+            document.getElementById('gifImage').src = gifs[2]; // 更换为第一次不愿意后的GIF
+        } else if (noButtonClickCount === 2) {
+            message.innerText = '你确定？';
+            document.getElementById('gifImage').src = gifs[3]; // 更换为第二次不愿意后的GIF
+        } else if (noButtonClickCount === 3) {
+            message.innerText = '奔溃了。。。';
+            this.style.display = 'none'; // 隐藏不愿意按钮
+            document.getElementById('yesButton').style.display = 'none'; // 隐藏愿意按钮
+            const restartButton = document.createElement('button');
+            restartButton.className = 'button';
+            restartButton.innerText = '重启';
+            restartButton.onclick = restart; // 添加重启功能
+            document.getElementById('mainContainer').appendChild(restartButton);
+
+            document.getElementById('gifImage').src = gifs[4]; // 更换为第三次不愿意后的GIF
+        }
+        message.style.display = 'block';
+        this.style.animation = 'shake 0.5s'; // 添加摇晃动画
+        setTimeout(() => {
+            this.style.animation = 'none'; // 重置动画
+        }, 500);
+
+        // 播放“不愿意”按钮的音效
+        const noSounds = [document.getElementById('noSound1'), document.getElementById('noSound2'), document.getElementById('noSound3')];
+        const randomNoSound = noSounds[Math.floor(Math.random() * noSounds.length)];
+        randomNoSound.currentTime = 0; // 从头开始播放
+        randomNoSound.play();
+    };
+
+    function createHeartRain() {
+        for (let i = 0; i < 50; i++) { // 创建50个爱心
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.innerHTML = '♥'; // 使用爱心符号
+            heart.style.left = Math.random() * 100 + 'vw'; // 随机位置
+            heart.style.fontSize = (Math.random() * 10 + 15) + 'px'; // 随机大小，范围在15px到25px之间
+            heart.style.animationDuration = (Math.random() * 3 + 2) + 's'; // 随机掉落时间
+            document.body.appendChild(heart);
+
+            // 爱心掉落后移除
+            heart.addEventListener('animationend', () => {
+                heart.remove();
+            });
+        }
+    }
+
+    function restart() {
+        noButtonClickCount = 0; // 重置点击次数
+        document.getElementById('responseMessage').style.display = 'none'; // 隐藏消息
+        document.getElementById('yesButton').style.display = 'inline-block'; // 显示愿意按钮
+        document.getElementById('noButton').style.display = 'inline-block'; // 显示不愿意按钮
+        document.getElementById('mainContainer').removeChild(document.querySelector('.button:last-child')); // 移除重启按钮
+
+        // 重置GIF图片
+        document.getElementById('gifImage').src = gifs[0]; // 重置为初始GIF
+    }
+</script>
+</body>
+</html>
